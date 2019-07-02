@@ -12,11 +12,11 @@ class Discount{
      * @var array
      */
     const DISCOUNT = [
-        '0.95'=> [
+        '95折券'=> [
             'name' =>'95折券',
             'count' =>'0.95'
         ],
-        '0.9'=>[
+        '9折券'=>[
             'name' =>'9折券',
             'count' =>'0.9',
         ]

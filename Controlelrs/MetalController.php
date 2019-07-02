@@ -1,6 +1,7 @@
 <?php
 namespace Controllers;
 use Model\CouCoupon;
+use Model\Discount;
 use Model\Member;
 use Model\Product;
 
@@ -25,8 +26,15 @@ class MetalController
         }
         $member = Member::getMember($info['memberId']);
         //打印用户信息凭证
+        $member_message = $this->memberMessage($member,$info);
+        //打印商品信息
+        $product_message =
 
         //判断九折券
+        $discount_cards = 0;
+        if(isset($info['discountCards'])){
+            $discount_cards = $this->discountCoupon($info['discountCards']);
+        }
 
         //处理商品相关信息
         if(!isset($info['items'])){
@@ -37,7 +45,7 @@ class MetalController
         $full_price   = 0;
 
         foreach($info['items'] as $item){
-            $product = $this->getGoodsDiscount($item['product'],$item['amount']);
+            $product = $this->getGoodsDiscount($item['product'],$item['amount'],$discount_cards);
             if($product['discount_fee'] > $discount_max){
                 $discount_max = $product['discount_fee'];
             }
@@ -45,20 +53,52 @@ class MetalController
 
         }
 
+
     }
-    //用户信息凭证
+
+
+    public function productMessage($product_id,$amount){
+        $str = '';
+        $product = Product::getProduct($product_id);
+        if(empty($product)){
+            return '';
+        }
+
+    }
+
+    /**
+     * 查询当前打折券，打折比例
+     * @param $discountCards
+     * @return string
+     */
+    public function discountCoupon($discountCards){
+        $cards = Discount::DISCOUNT;
+        if(array_key_exists($discountCards,$cards)){
+            return $cards[$discountCards]['count'];
+        }
+        return '';
+    }
+
+    /**
+     * 用户信息凭证
+     * @param $member
+     * @param $info
+     * @return mixed
+     */
     public function memberMessage($member,$info){
         $member_message['orderId']       = $info['orderId'];
         $member_message['createTime']    = $info['createTime'];
         $member_message['memberId']      = $info['memberId'];
         $member_message['memberName']    = $member['name'];
-
+        $member_message['type']          = $member['type_name'];
+        $member_message['score']         = 0;
+        return $member_message;
     }
 
     /**
      * 获取当前商品信息
      */
-    public function getGoodsDiscount($product_id,$amount){
+    public function getGoodsDiscount($product_id,$amount,$discount_cards){
 
         $product = Product::getProduct($product_id);
         if(empty($product)){
@@ -67,8 +107,10 @@ class MetalController
 
         $full_discount_fee   = 0;
         $result = [
-            'fee' => $amount*$product['price'], //原价
-            'discount_fee' => 0, //折扣价
+            'fee'           => $amount*$product['price'], //原价
+            'discount_fee'  => 0, //满减折扣价
+            'discount_card' => 0,         //九折券折扣价格
+            'product_id'    => $product['no']
         ];
         //满四送一
         $number_discount_fee_four = 0;
@@ -100,6 +142,11 @@ class MetalController
             $result['discount_fee'] = $full_discount_fee;
         }else{
             $result['discount_fee'] = $number_discount_fee;
+        }
+
+        //判断当前商品是否适用于九折券,算出打折金额
+        if($product['discountType'] == $discount_cards){
+            $result['discount_card'] = $amount*$product['price']*(1-$discount_cards);
         }
 
         return $result;
