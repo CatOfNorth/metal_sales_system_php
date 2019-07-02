@@ -3,6 +3,7 @@ namespace Controllers;
 use Model\CouCoupon;
 use Model\Discount;
 use Model\Member;
+use Model\MemberGrade;
 use Model\Product;
 
 require_once './Model/Member.php';
@@ -70,7 +71,31 @@ class MetalController
 
         }
 
+        //处理积分逻辑
+        $money = $product_message_price - $coupon_message_price;//应收合计
+        $score = $money*$this->scoreMessage($member);  //新增积分
+        //累计积分
+        $member_message['score'] = $member_message['score'] + $score;
+        //判断当前用户积分所处的用户等级
 
+
+
+
+    }
+
+    public function getMemberScore($score){
+        $grade = MemberGrade::GRADE;
+
+    }
+
+    /**
+     * 获取当前用户积分比率
+     * @param $member
+     * @return mixed
+     */
+    public function scoreMessage($member){
+        $member_grade = MemberGrade::GRADE;
+        return $member_grade[$member['type']]['integralMult'];
     }
 
     /**

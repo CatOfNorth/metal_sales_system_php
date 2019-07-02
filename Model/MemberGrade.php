@@ -12,7 +12,7 @@ class MemberGrade
      * 用户等级
      * @var array
      */
-    const grade = [
+    const GRADE = [
         '1'=> [
             'name'         =>'普卡',
             'integralMult' =>'1',
