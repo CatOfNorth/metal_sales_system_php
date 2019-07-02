@@ -27,8 +27,16 @@ class MetalController
         $member = Member::getMember($info['memberId']);
         //打印用户信息凭证
         $member_message = $this->memberMessage($member,$info);
+        //处理商品相关信息
+        if(!isset($info['items'])){
+            return '请选择相应商品';
+        }
         //打印商品信息
-        $product_message =
+        $product_message = '';
+        foreach($info['items'] as $item){
+            $product_message .= $this->productMessage($item['product'],$item['amount']).'\r\n';
+        }
+
 
         //判断九折券
         $discount_cards = 0;
@@ -36,10 +44,7 @@ class MetalController
             $discount_cards = $this->discountCoupon($info['discountCards']);
         }
 
-        //处理商品相关信息
-        if(!isset($info['items'])){
-            return '请选择相应商品';
-        }
+
         //满减变量
         $discount_max = 0;
         $full_price   = 0;
@@ -63,7 +68,9 @@ class MetalController
         if(empty($product)){
             return '';
         }
-
+        $total_price = $amount * $product['price'];
+        $str .= '('.$product['no'].')'.$product['name'].'*'.$amount.', '.$product['price'].', '.$total_price;
+        return $str;
     }
 
     /**
