@@ -33,8 +33,13 @@ class MetalController
         }
         //打印商品信息
         $product_message = '';
+        $product_message_price = 0;
         foreach($info['items'] as $item){
-            $product_message .= $this->productMessage($item['product'],$item['amount']).'\r\n';
+            $res_product_message = $this->productMessage($item['product'],$item['amount']);
+            if(!empty($res_product_message)){
+                $product_message .= $res_product_message['str'].'\r\n';
+                $product_message_price += $res_product_message['amount'];
+            }
         }
 
 
@@ -44,24 +49,36 @@ class MetalController
             $discount_cards = $this->discountCoupon($info['discountCards']);
         }
 
-
-        //满减变量
-        $discount_max = 0;
-        $full_price   = 0;
-
+        //满减逻辑处理
+        $coupon_message = '';
+        $coupon_message_price = 0;
         foreach($info['items'] as $item){
-            $product = $this->getGoodsDiscount($item['product'],$item['amount'],$discount_cards);
-            if($product['discount_fee'] > $discount_max){
-                $discount_max = $product['discount_fee'];
+            $product_info = $this->getGoodsDiscount($item['product'],$item['amount'],$discount_cards);
+            $coupon_price = 0;
+            if(!empty($product_info)){
+                if($product_info['discount_fee'] != 0){
+                    $coupon_price += $product_info['discount_fee'];
+                }
+                if($product_info['discount_card'] != 0){
+                    $coupon_price += $product_info['discount_card'];
+                }
+                if($coupon_price > 0){
+                    $coupon_message .= '('.$product_info.')'.$product_info['product_name'].': -'.$coupon_price.'\r\n';
+                    $coupon_message_price += $coupon_price;
+                }
             }
-            $full_price += $product['price'];
 
         }
 
 
     }
 
-
+    /**
+     * 打印商品信息
+     * @param $product_id
+     * @param $amount
+     * @return array|string
+     */
     public function productMessage($product_id,$amount){
         $str = '';
         $product = Product::getProduct($product_id);
@@ -70,7 +87,10 @@ class MetalController
         }
         $total_price = $amount * $product['price'];
         $str .= '('.$product['no'].')'.$product['name'].'*'.$amount.', '.$product['price'].', '.$total_price;
-        return $str;
+        return [
+            'str'    => $str,
+            'amount' => $total_price
+        ];
     }
 
     /**
@@ -114,10 +134,10 @@ class MetalController
 
         $full_discount_fee   = 0;
         $result = [
-            'fee'           => $amount*$product['price'], //原价
             'discount_fee'  => 0, //满减折扣价
             'discount_card' => 0,         //九折券折扣价格
-            'product_id'    => $product['no']
+            'product_id'    => $product['no'],
+            'product_name'  => $product['name']
         ];
         //满四送一
         $number_discount_fee_four = 0;
