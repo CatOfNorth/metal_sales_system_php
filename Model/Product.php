@@ -44,7 +44,7 @@ class Product{
             'unit'          => '条',
             'price'         => 980.00,
             'discountType'  => 0,
-            'fullCutCoupon' => 4
+            'fullCutCoupon' => 5
 
         ],
         '002002'=>[
@@ -58,16 +58,16 @@ class Product{
         ],
         '002001'=>[
             'name'          => '守扩之羽比翼双飞4.8g',
-            'no'            => '1080.00',
+            'no'            => '002001',
             'unit'          => '条',
             'price'         => 1080.00,
             'discountType'  => 0.95,
-            'fullCutCoupon' => 4
+            'fullCutCoupon' => 5
 
         ],
         '002003'=>[
             'name'          => '中国银象棋12g',
-            'no'            => '698.00',
+            'no'            => '002003',
             'unit'          => '套',
             'price'         => 698.00,
             'discountType'  => 0.9,
@@ -82,7 +82,7 @@ class Product{
      * @return mixed|null
      */
     public static function getProduct($product_id){
-        if(!in_array($product_id,self::PRODUCT)){
+        if(!array_key_exists($product_id,self::PRODUCT)){
             return null;
         }
         return self::PRODUCT[$product_id];
