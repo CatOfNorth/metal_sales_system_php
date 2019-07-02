@@ -13,19 +13,19 @@ class CouCoupon{
      * @var array
      */
     const COUPON = [
-        '1' => [
+        '3000' => [
             'type'          =>'01',
             'fullAmount'    =>'3000',
             'cutAmount'     =>'350',
             'price_type'    =>1
         ],
-        '2' => [
+        '2000' => [
             'type'          =>'01',
             'fullAmount'    =>'2000',
             'cutAmount'     =>'30',
             'price_type'    =>1
         ],
-        '3' => [
+        '1000' => [
             'type'          =>'01',
             'fullAmount'    =>'1000',
             'cutAmount'     =>'10',

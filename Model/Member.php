@@ -1,5 +1,6 @@
 <?php
 namespace Model;
+require_once './Model/MemberGrade.php';
 /**
  * 用户类
  * Class Product
@@ -11,7 +12,7 @@ class Member{
      * 所有用户信息
      * @var array
      */
-    const Members = [
+    const MEMBER = [
         '6236609999'    => [
             'name'      =>'马丁',
             'type'      =>'1',
@@ -44,10 +45,10 @@ class Member{
      * @return bool|mixed
      */
     public static function getMember($member_id){
-        if(!in_array($member_id,self::Members)){
+        if(!array_key_exists($member_id,self::MEMBER)){
            return null;
         }
-        return self::Members[$member_id];
+        return self::MEMBER[$member_id];
     }
 
     /**
