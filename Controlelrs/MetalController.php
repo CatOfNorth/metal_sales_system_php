@@ -77,15 +77,41 @@ class MetalController
         //累计积分
         $member_message['score'] = $member_message['score'] + $score;
         //判断当前用户积分所处的用户等级
+        $card_name = $this->getMemberScore($member_message['score']);
 
-
-
+        return [
+            'member_message'        => $member_message,
+            'product_message'       => $product_message,
+            'product_message_price' => $product_message_price,
+            'coupon_message'        => $coupon_message,
+            'coupon_message_price'  => $coupon_message_price,
+            'score'                 => $score,
+            'card_name'             => $card_name,
+        ];
 
     }
 
+    /**
+     * 根据当前积分获取用户级别
+     * @param $score
+     * @return string
+     */
     public function getMemberScore($score){
         $grade = MemberGrade::GRADE;
+        $card_name = '';
+        foreach($grade as $val){
+            if(!empty( $score['sectionTop'])){
+                if($score >= $val['sectionBot'] && $score < $score['sectionTop']){
+                    $card_name = $val['name'];
+                }
+            }else{
+                if($score >= $val['sectionBot']){
+                    $card_name = $val['name'];
+                }
+            }
+            return $card_name;
 
+        }
     }
 
     /**

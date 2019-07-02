@@ -6,6 +6,7 @@
     require_once './Controlelrs/MetalController.php';
     $input_json = file_get_contents('./input.json');
     $metal = new \Controllers\MetalController();
-    $metal->order($input_json);
+    $member_info = $metal->order($input_json);
+    var_dump($member_info);
 
 
